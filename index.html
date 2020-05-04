@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Weather API</title>
+</head>
+<style type="text/css">
+	.flag{
+		height: 100px;
+		width: 200px;
+	}
+	.button {
+		padding: 10px;
+	}
+</style>
+<body>
+	<div id="displayCountries" class="col-xs-12"></div>
+
+	<script type="text/javascript">
+	async function apiFunction(url) {
+			const response = await fetch(url);
+			if(response.ok){
+		        const data = await response.json();
+				return data;
+		    }
+		    if(response.status == 404){
+		        return await response.json();
+		    }
+	}
+	const result = apiFunction('https://restcountries.eu/rest/v2/all');
+	var text = "";
+	result.then(data => {
+		var i;
+		for (i = 0; i < data.length; i++) {
+		  text += `<img class="flag" src="${data[i]['flag']}"> ${data[i]['name']} <button class="button" type="button" onclick="checkWeather('${(data[i]['capital'].replace(/'/g,'%27')).replace(/ /g,'%20')}','${data[i]['alpha2Code']}')">view weather</button><br>`; 
+		}
+		document.getElementById("displayCountries").innerHTML = text;
+		
+	})
+	.catch(error =>console.log(error));
+
+	function checkWeather(city,code) {
+		var  url = 'https://api.openweathermap.org/data/2.5/weather?q='+city+','+code+'&appid=3c1145541f4dd4f86ad50a2697490b1b';
+		const weather = apiFunction(url);
+
+		weather.then(data => {
+			console.log("ressssss"+data.cod);
+
+			if(data.cod==404) {
+		        alet(data.message);
+		    } else {
+				alert("Temperature "+data.main.temp);
+			}
+		})
+		.catch(error =>console.log(error));
+	}
+
+
+	</script>
+</body>
+</html>
